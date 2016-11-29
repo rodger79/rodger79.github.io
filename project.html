@@ -1,0 +1,51 @@
+<html>
+<head>
+<script type="text/javascript">
+function buttonpress(x) {
+  switch(x){
+    case "clear":
+      calculatorform.input1.value = "";
+      break;
+    default:
+      calculatorform.input1.value =  calculatorform.input1.value + x;   
+  }
+}
+function evaluate1(x) {
+ calculatorform.input1.value = eval(x);
+}
+
+</script>
+<body>
+<form name=calculatorform>
+<input type=text name=input1 style="text-align:right;height:40px;width:370px;margin-right:10px;"></br>
+<input type=button name=button7 value=7 onclick="buttonpress(button7.value)" style="height:40px;width:40px;margin-right:10px;">
+<input type=button name=button8 value=8 onclick="buttonpress(button8.value)" style="height:40px;width:40px;margin-right:10px;">
+<input type=button name=button9 value=9 onclick="buttonpress(button9.value)" style="height:40px;width:40px;margin-right:10px;">
+<input type=button name=add value=+ onclick="buttonpress(add.value)" style="height:40px;width:40px;margin-right:10px;">
+<input type=button name=subtract value=- onclick="buttonpress(subtract.value)" style="height:40px;width:40px;margin-right:10px;">
+<input type=button name=mod value=% onclick="buttonpress(mod.value)" style="height:40px;width:40px;margin-right:10px;">
+<input type=button name=clr value=C onclick="buttonpress('clear')" style="height:40px;width:40px;margin-right:10px;">
+</br>
+<input type=button name=button4 value=4 onclick="buttonpress(button4.value)" style="height:40px;width:40px;margin-right:10px;">
+<input type=button name=button5 value=5 onclick="buttonpress(button5.value)" style="height:40px;width:40px;margin-right:10px;">
+<input type=button name=button6 value=6 onclick="buttonpress(button6.value)" style="height:40px;width:40px;margin-right:10px;">
+<input type=button name=multiply value=* onclick="buttonpress(multiply.value)" style="height:40px;width:40px;margin-right:10px;">
+<input type=button name=divide value=/ onclick="buttonpress(divide.value)" style="height:40px;width:40px;margin-right:10px;">
+<input type=button name=lparen value=( onclick="buttonpress(lparen.value)" style="height:40px;width:40px;margin-right:10px;">
+<input type=button name=rparen value=) onclick="buttonpress(rparen.value)" style="height:40px;width:40px;margin-right:10px;">
+</br>
+<input type=button name=button1 value=1 onclick="buttonpress(button1.value)" style="height:40px;width:40px;margin-right:10px;">
+<input type=button name=button2 value=2 onclick="buttonpress(button2.value)" style="height:40px;width:40px;margin-right:10px;">
+<input type=button name=button3 value=3 onclick="buttonpress(button3.value)" style="height:40px;width:40px;margin-right:10px;">
+<input type=button name=sqrt value=&#8730 onclick="buttonpress('sqrt')" style="height:40px;width:40px;margin-right:10px;">
+<input type=button name=sq value="sq" onclick="buttonpress('sq')" style="height:40px;width:40px;margin-right:10px;"></br>
+<input type=button name=button0 value=0 onclick="buttonpress(button0.value)" style="height:40px;width:40px;margin-right:10px;">
+<input type=button name=buttondot value=. onclick="buttonpress(buttondot.value)" style="height:40px;width:40px;margin-right:10px;">
+<input type=button name=buttoneq value== onclick="evaluate1(input1.value)" style="height:40px;width:40px;margin-right:10px;"></br>
+
+
+
+</form>
+</body>
+</head>
+</html>
