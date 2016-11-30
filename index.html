@@ -12,10 +12,9 @@ function buttonpress(x) {
 }
 
 function evaluate1(x) {
-// calculatorform.input1.value = eval(x);
- var tree = parse(x);
- calculatorform.input1.value = calculate(tree);
- //window.alert("test");
+  // calculatorform.input1.value = eval(x);
+  var tree = parse(x);
+  calculatorform.input1.value = calculate(tree);
   console.log("testing log");
 }
 
@@ -35,68 +34,62 @@ function isNumber(token) {
     return token !== undefined && token.match(/^[0-9]+$/) !== null;
 }
 
-function isName(token) {
-    return token !== undefined && token.match(/^[A-Za-z]+$/) !== null;
-}
 
 function parse(code) {
   var tokens = tokenize(code);
   var position = 0;
   function peek() {
-        return tokens[position];
+    return tokens[position];
   }
   function consume(token) {
-
-        position++;
+    position++;
   }
   function parsePrimaryExpr() {
-        var t = peek();
-
-        if (isNumber(t)) {
-            consume(t);
-            return {type: "number", value: t};
-        } else if (isName(t)) {
-            consume(t);
-            return {type: "name", id: t};
-        } else if (t === "(") {
-            consume(t);
-            var expr = parseExpr();
-            if (peek() !== ")")
-                throw new SyntaxError("expected )");
-            consume(")");
-            return expr;
-        } else {
-        throw new SyntaxError("expected a number, a variable, or parentheses");
-        }
+    var t = peek();
+    if (isNumber(t)) {
+        consume(t);
+        return {type: "number", value: t};
+    } 
+    else if (t === "(") {
+      consume(t);
+      var expr = parseExpr();
+      if (peek() !== ")")
+        throw new SyntaxError("expected )");
+        consume(")");
+        return expr;
+      }
+      else {
+        throw new SyntaxError("expected a number or parentheses");
+      }
     }
     function parseMulExpr() {
-        var expr = parsePrimaryExpr();
-        var t = peek();
-        while (t === "*" || t === "/") {
-            consume(t);
-            var rhs = parsePrimaryExpr();
-            expr = {type: t, left: expr, right: rhs};
-            t = peek();
-        }
-        return expr;
+      var expr = parsePrimaryExpr();
+      var t = peek();
+      while (t == "*" || t == "/" || == "%") {
+        consume(t);
+        var rhs = parsePrimaryExpr();
+        expr = {type: t, left: expr, right: rhs};
+        t = peek();
+      }
+      return expr;
     }
     function parseExpr() {
-        var expr = parseMulExpr();
-        var t = peek();
-        while (t === "+" || t === "-") {
-            consume(t);
-            var rhs = parseMulExpr();
-            expr = {type: t, left: expr, right: rhs};
-            t = peek();
-        }
-        return expr;
+      var expr = parseMulExpr();
+      var t = peek();
+      while (t == "+" || t == "-") {
+        consume(t);
+        var rhs = parseMulExpr();
+        expr = {type: t, left: expr, right: rhs};
+        t = peek();
+      }
+      return expr;
     }
     var result = parseExpr();
     if (position !== tokens.length)
-        throw new SyntaxError("unexpected '" + peek() + "'");
-
+      throw new SyntaxError("unexpected '" + peek() + "'");
     return result;
 }
+
 //neeed recursive function to do math on parse object
 function calculate(tree) {
   //if type is number return value
@@ -106,18 +99,22 @@ function calculate(tree) {
   else 
     switch (tree.type){
       case ("+"):
-        return parseFloat(calculate(tree.left)) + parseFloat(calculate(tree.right));
-      break;
+        return parseInt(calculate(tree.left)) + parseInt(calculate(tree.right));
+        break;
       case ("-"):
-        return parseFloat(calculate(tree.left)) - parseFloat(calculate(tree.right));
-      break;
+        return parseInt(calculate(tree.left)) - parseInt(calculate(tree.right));
+        break;
       case ("*"):
-        return parseFloat(calculate(tree.left)) * parseFloat(calculate(tree.right));
-      break;
+        return parseInt(calculate(tree.left)) * parseInt(calculate(tree.right));
+        break;
       case ("/"):
         //should prob check for div/0 error
-        return parseFloat(calculate(tree.left)) / parseFloat(calculate(tree.right));
-      break;
+        return parseInt(calculate(tree.left)) / parseInt(calculate(tree.right));
+        break;
+      case ("%"):
+        //should prob check for div/0 error
+        return parseInt(calculate(tree.left)) % parseInt(calculate(tree.right));
+        break;
     }
 }
 
