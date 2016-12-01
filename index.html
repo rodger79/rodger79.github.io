@@ -17,7 +17,7 @@ function buttonpress(x) {
   }
   else if (input == "0" || input == "Infinity" || input == "+" || input == "-" || input == "*" || input == "/"){
     //special cases, if zero or infinity in input form, don't append
-    //also no starting with  +,-,*,/
+    //also no starting with  +,-,*,/ allowed
     calculatorform.input1.value = x;
   }
   else {
@@ -65,7 +65,7 @@ function parser(code) {
         position++;
         return {type: "number", value: t};
     } 
-    //if token is a paren, parse the expressions inside looking for addition first
+    //if token is a paren, parse the expressions inside
     else if (t === "(") {
       position++;
       var expr = parseaddsub();
@@ -75,6 +75,8 @@ function parser(code) {
         return expr;
       }
     }
+    //implied else by returning function call below
+    
   //second parse multiplication expressions then start again recursively at the top
   //to look for paren and number
   function parsemultdiv() {
@@ -82,6 +84,8 @@ function parser(code) {
     var t = peek();
     while (t == "*" || t == "/") {
       position++;
+      //create left side of object
+      //call parser on next token on right side of object      
       expr = {type: t, left: expr, right: topparse()};
       t = peek();
     }
@@ -93,6 +97,8 @@ function parser(code) {
     var t = peek();
     while (t == "+" || t == "-") {
       position++;
+      //create left side of object
+      //call parser on next token on right side of object
       expr = {type: t, left: expr, right: parsemultdiv()};
       t = peek();
     }
@@ -102,28 +108,26 @@ function parser(code) {
   return parseaddsub();
 }
 
-//neeed recursive function to do math on object tree of analyzed
+//recursive function to do math on object tree of analyzed
 function calculate(tree) {
-  //if type is number return value
-  if (tree.type == 'number') {
-    return tree.value;
-  } 
-  //recursive calls on lower branches if first operation is mathematical
-  else 
-    switch (tree.type){
-      case ("+"):
-        return parseInt(calculate(tree.left)) + parseInt(calculate(tree.right));
-        break;
-      case ("-"):
-        return parseInt(calculate(tree.left)) - parseInt(calculate(tree.right));
-        break;
-      case ("*"):
-        return parseInt(calculate(tree.left)) * parseInt(calculate(tree.right));
-        break;
-      case ("/"):
-        return parseInt(calculate(tree.left)) / parseInt(calculate(tree.right));
-        break;
-    }
+
+  switch (tree.type){
+    case ("number"):
+      return tree.value;
+      break;
+    case ("+"):
+      return parseInt(calculate(tree.left)) + parseInt(calculate(tree.right));
+      break;
+    case ("-"):
+      return parseInt(calculate(tree.left)) - parseInt(calculate(tree.right));
+      break;
+    case ("*"):
+      return parseInt(calculate(tree.left)) * parseInt(calculate(tree.right));
+      break;
+    case ("/"):
+      return parseInt(calculate(tree.left)) / parseInt(calculate(tree.right));
+      break;
+  }
 }
 
 
