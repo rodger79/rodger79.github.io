@@ -3,38 +3,43 @@
 <script type="text/javascript">
 
 function buttonpress(x) {
+  //logic on the gui
   console.log(calculatorform.input1.value);
-  if (x === "clear") {
+  if (x == "clear") {
+    //clear the input form
     calculatorform.input1.value = "";
   } 
-  else if(x === "del"){
+  else if(x == "del"){
+    //delete single char off input form
     calculatorform.input1.value =  (calculatorform.input1.value).slice(0,-1);   
   }
-  else if (calculatorform.input1.value === "0"){
-    calculatorform.input1.value =x;
+  else if (calculatorform.input1.value == "0" || calculatorform.input1.value == "Infinity"){
+    //special cases, if zero or infinity in input form, don't append
+    calculatorform.input1.value = x;
   }
   else {
+    //all other cases, append new char to input
     calculatorform.input1.value =  calculatorform.input1.value + x;   
   }
 }
 
 function evaluate1(x) {
-  // calculatorform.input1.value = eval(x);
+  // calculatorform.input1.value = eval(x); //calls built in evaluator 
+  //parse the input string
   var tree = parse(x);
+  //recursively parse object tree to do calculation
   calculatorform.input1.value = calculate(tree);
-  console.log("testing log");
 }
 
-function tokenize(code) {
-    var results = [];
-    var tokenRegExp = /\s*([A-Za-z]+|[0-9]+|\S)\s*/g;
-
-    var m;
-    while ((m = tokenRegExp.exec(code)) !== null)
-        results.push(m[1]);
-    return results;
+//return object tree of tokenized code
+function lexer(inputstring) {
+    var retval = [];
+    var regexp = /\s*([0-9]+|\S)\s*/g;
+    var n;
+    while ((n = regexp.exec(inputstring)) !== null)
+        retval.push(n[1]);
+    return retval;
 }
-
 
 function isNumber(token) {
     return token !== undefined && token.match(/^[0-9]+$/) !== null;
@@ -42,7 +47,7 @@ function isNumber(token) {
 
 
 function parse(code) {
-  var tokens = tokenize(code);
+  var tokens = lexer(code);
   var position = 0;
   function peek() {
     return tokens[position];
@@ -71,7 +76,7 @@ function parse(code) {
     function parseMulExpr() {
       var expr = parsePrimaryExpr();
       var t = peek();
-      while (t === "*" || t === "/") {
+      while (t == "*" || t == "/") {
         consume(t);
         var rhs = parsePrimaryExpr();
         expr = {type: t, left: expr, right: rhs};
@@ -96,12 +101,13 @@ function parse(code) {
     return result;
 }
 
-//neeed recursive function to do math on parse object
+//neeed recursive function to do math on object tree of analyzed
 function calculate(tree) {
   //if type is number return value
   if (tree.type == 'number') {
     return tree.value;
   } 
+  //recursive calls on lower branches if first operation is mathematical
   else 
     switch (tree.type){
       case ("+"):
@@ -118,7 +124,6 @@ function calculate(tree) {
         return parseInt(calculate(tree.left)) / parseInt(calculate(tree.right));
         break;
       case ("%"):
-        //should prob check for div/0 error
         return parseInt(calculate(tree.left)) % parseInt(calculate(tree.right));
         break;
     }
@@ -149,7 +154,7 @@ function calculate(tree) {
 	<input type=button name=button3 value=3 onclick="buttonpress(button3.value)" style="height:40px;width:40px;margin-right:10px;">
 	<input type=button name=multiply value=* onclick="buttonpress(multiply.value)" style="height:40px;width:40px;margin-right:10px;">
     </br>
-	<input type=button name=button0 value=0 onclick="buttonpress(button0.value)" style="height:40px;width:40px;margin-right:10px;margin-left:55px;">
+	<input type=button name=button0 value=0 onclick="buttonpress(button0.value)" style="height:40px;width:40px;margin-right:10px;margin-left:54px;">
 	<input type=button name=buttoneq value== onclick="evaluate1(input1.value)" style="height:40px;width:40px;margin-right:10px;">
 	<input type=button name=divide value=/ onclick="buttonpress(divide.value)" style="height:40px;width:40px;margin-right:10px;">
 	</br>
