@@ -42,7 +42,7 @@ function lexer(inputstring) {
 }
 
 function isNumber(token) {
-    return token !== undefined && token.match(/^[0-9]+$/) !== null;
+    return ((token !== undefined) && (token.match(/^[0-9]+$/) !== null));
 }
 
 
@@ -52,32 +52,28 @@ function parse(code) {
   function peek() {
     return tokens[position];
   }
-  function consume(token) {
+  function increment(token) {
     position++;
   }
   function parsePrimaryExpr() {
     var t = peek();
     if (isNumber(t)) {
-        consume(t);
+        increment(t);
         return {type: "number", value: t};
     } 
     else if (t === "(") {
-      consume(t);
+      increment(t);
       var expr = parseExpr();
       if (peek() !== ")")
-        throw new SyntaxError("expected )");
-        consume(")");
+        increment(")");
         return expr;
-      }
-      else {
-        throw new SyntaxError("expected a number or parentheses");
       }
     }
     function parseMulExpr() {
       var expr = parsePrimaryExpr();
       var t = peek();
       while (t == "*" || t == "/") {
-        consume(t);
+        increment(t);
         var rhs = parsePrimaryExpr();
         expr = {type: t, left: expr, right: rhs};
         t = peek();
@@ -88,7 +84,7 @@ function parse(code) {
       var expr = parseMulExpr();
       var t = peek();
       while (t == "+" || t == "-") {
-        consume(t);
+        increment(t);
         var rhs = parseMulExpr();
         expr = {type: t, left: expr, right: rhs};
         t = peek();
@@ -96,8 +92,7 @@ function parse(code) {
       return expr;
     }
     var result = parseExpr();
-    if (position !== tokens.length)
-      throw new SyntaxError("unexpected '" + peek() + "'");
+
     return result;
 }
 
@@ -120,11 +115,7 @@ function calculate(tree) {
         return parseInt(calculate(tree.left)) * parseInt(calculate(tree.right));
         break;
       case ("/"):
-        //should prob check for div/0 error
         return parseInt(calculate(tree.left)) / parseInt(calculate(tree.right));
-        break;
-      case ("%"):
-        return parseInt(calculate(tree.left)) % parseInt(calculate(tree.right));
         break;
     }
 }
@@ -133,7 +124,8 @@ function calculate(tree) {
 </script>
 <body>
 <form name=calculatorform>
-	<input type=text name=input1 style="text-align:right;height:40px;width:310px;margin-right:10px;"></br>
+	<input type=text name=input1 style="text-align:right;height:40px;width:310px;margin-right:10px;">
+	</br>
 	<input type=button name=button7 value=7 onclick="buttonpress(button7.value)" style="height:40px;width:40px;margin-right:10px;">
 	<input type=button name=button8 value=8 onclick="buttonpress(button8.value)" style="height:40px;width:40px;margin-right:10px;">
 	<input type=button name=button9 value=9 onclick="buttonpress(button9.value)" style="height:40px;width:40px;margin-right:10px;">
@@ -145,10 +137,9 @@ function calculate(tree) {
 	<input type=button name=button5 value=5 onclick="buttonpress(button5.value)" style="height:40px;width:40px;margin-right:10px;">
 	<input type=button name=button6 value=6 onclick="buttonpress(button6.value)" style="height:40px;width:40px;margin-right:10px;">
 	<input type=button name=subtract value=- onclick="buttonpress(subtract.value)" style="height:40px;width:40px;margin-right:10px;">
-
-
 	<input type=button name=lparen value=( onclick="buttonpress(lparen.value)" style="height:40px;width:40px;margin-right:10px;">
-	<input type=button name=rparen value=) onclick="buttonpress(rparen.value)" style="height:40px;width:40px;margin-right:10px;"></br>
+	<input type=button name=rparen value=) onclick="buttonpress(rparen.value)" style="height:40px;width:40px;margin-right:10px;">
+	</br>
 	<input type=button name=button1 value=1 onclick="buttonpress(button1.value)" style="height:40px;width:40px;margin-right:10px;">
 	<input type=button name=button2 value=2 onclick="buttonpress(button2.value)" style="height:40px;width:40px;margin-right:10px;">
 	<input type=button name=button3 value=3 onclick="buttonpress(button3.value)" style="height:40px;width:40px;margin-right:10px;">
