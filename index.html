@@ -2,31 +2,34 @@
 <head>
 <script type="text/javascript">
 
+//logic on the gui
 function buttonpress(x) {
-  //logic on the gui
-  console.log(calculatorform.input1.value);
+
+  var input = calculatorform.input1.value;
+  //console.log(input);
   if (x == "clear") {
     //clear the input form
     calculatorform.input1.value = "";
   } 
   else if(x == "del"){
     //delete single char off input form
-    calculatorform.input1.value =  (calculatorform.input1.value).slice(0,-1);   
+    calculatorform.input1.value =  (input).slice(0,-1);   
   }
-  else if (calculatorform.input1.value == "0" || calculatorform.input1.value == "Infinity"){
+  else if (input == "0" || input == "Infinity" || input == "+" || input == "-" || input == "*" || input == "/"){
     //special cases, if zero or infinity in input form, don't append
+    //also no starting with  +,-,*,/
     calculatorform.input1.value = x;
   }
   else {
     //all other cases, append new char to input
-    calculatorform.input1.value =  calculatorform.input1.value + x;   
+    calculatorform.input1.value =  input + x;   
   }
 }
 
 function evaluate1(x) {
   // calculatorform.input1.value = eval(x); //calls built in evaluator 
   //parse the input string
-  var tree = parse(x);
+  var tree = parser(x);
   //recursively parse object tree to do calculation
   calculatorform.input1.value = calculate(tree);
 }
@@ -41,59 +44,62 @@ function lexer(inputstring) {
     return retval;
 }
 
-function isNumber(token) {
+function number(token) {
     return ((token !== undefined) && (token.match(/^[0-9]+$/) !== null));
 }
 
-
-function parse(code) {
+//function that has nested recursive functions to go through the token list
+//and build an object tree
+function parser(code) {
   var tokens = lexer(code);
   var position = 0;
   function peek() {
     return tokens[position];
   }
-  function increment(token) {
-    position++;
-  }
-  function parsePrimaryExpr() {
+
+  function topparse() {
     var t = peek();
-    if (isNumber(t)) {
-        increment(t);
+    //first check if token is a number, create number object
+    //can't go any lower in the parse tree
+    if (number(t)) {
+        position++;
         return {type: "number", value: t};
     } 
+    //if token is a paren, parse the expressions inside looking for addition first
     else if (t === "(") {
-      increment(t);
-      var expr = parseExpr();
+      position++;
+      var expr = parseaddsub();
+      //you're done parsing inside the paren once you find the matching paren
       if (peek() !== ")")
-        increment(")");
+        position++;
         return expr;
       }
     }
-    function parseMulExpr() {
-      var expr = parsePrimaryExpr();
-      var t = peek();
-      while (t == "*" || t == "/") {
-        increment(t);
-        var rhs = parsePrimaryExpr();
-        expr = {type: t, left: expr, right: rhs};
-        t = peek();
-      }
-      return expr;
+  //second parse multiplication expressions then start again recursively at the top
+  //to look for paren and number
+  function parsemultdiv() {
+    var expr = topparse();
+    var t = peek();
+    while (t == "*" || t == "/") {
+      position++;
+      expr = {type: t, left: expr, right: topparse()};
+      t = peek();
     }
-    function parseExpr() {
-      var expr = parseMulExpr();
-      var t = peek();
-      while (t == "+" || t == "-") {
-        increment(t);
-        var rhs = parseMulExpr();
-        expr = {type: t, left: expr, right: rhs};
-        t = peek();
-      }
-      return expr;
+    return expr;
+  }
+  //first parse addition expressions
+  function parseaddsub() {
+    var expr = parsemultdiv();
+    var t = peek();
+    while (t == "+" || t == "-") {
+      position++;
+      expr = {type: t, left: expr, right: parsemultdiv()};
+      t = peek();
     }
-    var result = parseExpr();
-
-    return result;
+    return expr;
+  }
+  //call add/sub parser first to start things off
+  return parseaddsub();
 }
 
 //neeed recursive function to do math on object tree of analyzed
