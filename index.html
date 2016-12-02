@@ -43,7 +43,7 @@ function lexer(inputstring) {
         retval.push(n[1]);
     return retval;
 }
-
+//check to see if token is a number
 function number(token) {
     return ((token !== undefined) && (token.match(/^[0-9]+$/) !== null));
 }
